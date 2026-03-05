@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 class="mb-4">Pending Placement Drives</h3>
+
+{% for drive in drives %}
+
+<div class="card mb-3 shadow-sm">
+
+<div class="card-body">
+
+<h5>{{ drive["company_name"] }} — {{ drive["job_title"] }}</h5>
+
+<a class="btn btn-success btn-sm"
+href="/admin/approve-drive/{{ drive['id'] }}">
+Approve
+</a>
+
+</div>
+
+</div>
+
+{% else %}
+
+<p>No pending drives</p>
+
+{% endfor %}
+
+{% endblock %}

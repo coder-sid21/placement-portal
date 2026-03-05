@@ -9,21 +9,20 @@ def create_app():
     app = Flask(__name__)
     app.secret_key = "supersecretkey"
 
-    # make sure instance folder exists
     os.makedirs("instance", exist_ok=True)
     app.config["DATABASE"] = os.path.join("instance", "database.db")
 
-    # -------------------------
-    # Database connection
-    # -------------------------
+    # ---------------------------
+    # Database
+    # ---------------------------
     def get_db():
         conn = sqlite3.connect(app.config["DATABASE"])
         conn.row_factory = sqlite3.Row
         return conn
 
-    # -------------------------
-    # Login required decorator
-    # -------------------------
+    # ---------------------------
+    # Login Required Decorator
+    # ---------------------------
     def login_required(role=None):
         def decorator(f):
             @wraps(f)
@@ -38,16 +37,16 @@ def create_app():
             return wrapper
         return decorator
 
-    # -------------------------
+    # ---------------------------
     # Home
-    # -------------------------
+    # ---------------------------
     @app.route("/")
     def home():
         return "Placement Portal Running 🚀"
 
-    # -------------------------
-    # Create Admin (one time)
-    # -------------------------
+    # ---------------------------
+    # Create Admin (run once)
+    # ---------------------------
     @app.route("/create-admin")
     def create_admin():
         db = get_db()
@@ -63,9 +62,9 @@ def create_app():
         except:
             return "Admin already exists."
 
-    # -------------------------
+    # ---------------------------
     # Login
-    # -------------------------
+    # ---------------------------
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
@@ -79,9 +78,22 @@ def create_app():
             ).fetchone()
 
             if user and check_password_hash(user["password_hash"], password):
+
+                # If company, check approval BEFORE login
+                if user["role"] == "company":
+                    company = db.execute(
+                        "SELECT * FROM companies WHERE user_id = ?",
+                        (user["id"],)
+                    ).fetchone()
+
+                    if company["approval_status"] != "Approved":
+                        return "Company not approved yet"
+
+                # Store session
                 session["user_id"] = user["id"]
                 session["role"] = user["role"]
 
+                # Redirect by role
                 if user["role"] == "admin":
                     return redirect("/admin-dashboard")
                 elif user["role"] == "company":
@@ -93,17 +105,17 @@ def create_app():
 
         return render_template("auth/login.html")
 
-    # -------------------------
+    # ---------------------------
     # Logout
-    # -------------------------
+    # ---------------------------
     @app.route("/logout")
     def logout():
         session.clear()
         return redirect("/login")
 
-    # -------------------------
+    # ---------------------------
     # Student Registration
-    # -------------------------
+    # ---------------------------
     @app.route("/register-student", methods=["GET", "POST"])
     def register_student():
         if request.method == "POST":
@@ -135,13 +147,71 @@ def create_app():
 
         return render_template("auth/register_student.html")
 
-    # -------------------------
+    # ---------------------------
+    # Company Registration
+    # ---------------------------
+    @app.route("/register-company", methods=["GET", "POST"])
+    def register_company():
+        if request.method == "POST":
+            email = request.form["email"]
+            password = request.form["password"]
+            company_name = request.form["company_name"]
+            website = request.form["website"]
+
+            db = get_db()
+            hashed_password = generate_password_hash(password)
+
+            try:
+                cursor = db.execute(
+                    "INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)",
+                    (email, hashed_password, "company")
+                )
+                user_id = cursor.lastrowid
+
+                db.execute(
+                    "INSERT INTO companies (user_id, company_name, website, approval_status) VALUES (?, ?, ?, ?)",
+                    (user_id, company_name, website, "Pending")
+                )
+
+                db.commit()
+                return "Company registered. Wait for admin approval."
+
+            except:
+                return "Email already exists"
+
+        return render_template("auth/register_company.html")
+
+    # ---------------------------
     # Dashboards
-    # -------------------------
+    # ---------------------------
     @app.route("/admin-dashboard")
     @login_required(role="admin")
     def admin_dashboard():
-        return "Admin Dashboard"
+        db = get_db()
+
+        students = db.execute(
+            "SELECT COUNT(*) FROM students"
+        ).fetchone()[0]
+
+        companies = db.execute(
+            "SELECT COUNT(*) FROM companies"
+        ).fetchone()[0]
+
+        drives = db.execute(
+            "SELECT COUNT(*) FROM placement_drives"
+        ).fetchone()[0]
+
+        applications = db.execute(
+            "SELECT COUNT(*) FROM applications"
+        ).fetchone()[0]
+
+        return render_template(
+            "admin/dashboard.html",
+            students=students,
+            companies=companies,
+            drives=drives,
+            applications=applications
+        )
 
     @app.route("/company-dashboard")
     @login_required(role="company")
@@ -153,10 +223,174 @@ def create_app():
     def student_dashboard():
         return "Student Dashboard"
 
+    # ---------------------------
+    # Admin View Companies
+    # ---------------------------
+    @app.route("/admin/companies")
+    @login_required(role="admin")
+    def view_companies():
+        db = get_db()
+        companies = db.execute(
+            "SELECT * FROM companies WHERE approval_status = 'Pending'"
+        ).fetchall()
+
+        return render_template("admin/view_companies.html", companies=companies)
+
+    # ---------------------------
+    # Approve Company
+    # ---------------------------
+    @app.route("/admin/approve-company/<int:company_id>")
+    @login_required(role="admin")
+    def approve_company(company_id):
+        db = get_db()
+        db.execute(
+            "UPDATE companies SET approval_status = 'Approved' WHERE id = ?",
+            (company_id,)
+        )
+        db.commit()
+
+        return redirect("/admin/companies")
+    
+    @app.route("/company/create-drive", methods=["GET", "POST"])
+    @login_required(role="company")
+    def create_drive():
+        if request.method == "POST":
+            job_title = request.form["job_title"]
+            job_description = request.form["job_description"]
+            eligibility = request.form["eligibility"]
+            package = request.form["package"]
+            location = request.form["location"]
+            deadline = request.form["deadline"]
+
+            db = get_db()
+
+            # get company id using logged-in user
+            company = db.execute(
+                "SELECT * FROM companies WHERE user_id = ?",
+                (session["user_id"],)
+            ).fetchone()
+
+            db.execute(
+                """INSERT INTO placement_drives 
+                (company_id, job_title, job_description, eligibility, package, location, application_deadline, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (company["id"], job_title, job_description, eligibility, package, location, deadline, "Pending")
+            )
+
+            db.commit()
+            return "Drive created successfully. Waiting for admin approval."
+
+        return render_template("company/create_drive.html")
+    # ---------------------------
+    # Admin View Drives
+    # ---------------------------
+    @app.route("/admin/drives")
+    @login_required(role="admin")
+    def view_drives():
+        db = get_db()
+
+        drives = db.execute(
+            """
+            SELECT placement_drives.*, companies.company_name
+            FROM placement_drives
+            JOIN companies ON placement_drives.company_id = companies.id
+            WHERE placement_drives.status = 'Pending'
+            """
+        ).fetchall()
+
+        return render_template("admin/view_drives.html", drives=drives)
+
+    # ---------------------------
+    # Approve Drive
+    # ---------------------------
+    @app.route("/admin/approve-drive/<int:drive_id>")
+    @login_required(role="admin")
+    def approve_drive(drive_id):
+        db = get_db()
+
+        db.execute(
+            "UPDATE placement_drives SET status = 'Approved' WHERE id = ?",
+            (drive_id,)
+        )
+
+        db.commit()
+
+        return redirect("/admin/drives")
+        return render_template("admin/view_drives.html", drives=drives)
+    @app.route("/student/drives")
+    @login_required(role="student")
+    def student_drives():
+        db = get_db()
+
+        drives = db.execute(
+            """
+            SELECT placement_drives.*, companies.company_name
+            FROM placement_drives
+            JOIN companies ON placement_drives.company_id = companies.id
+            WHERE placement_drives.status = 'Approved'
+            """
+        ).fetchall()
+
+        return render_template("student/view_drives.html", drives=drives)
+    
+    @app.route("/student/apply/<int:drive_id>")
+    @login_required(role="student")
+    def apply_drive(drive_id):
+        db = get_db()
+
+        student = db.execute(
+            "SELECT * FROM students WHERE user_id = ?",
+            (session["user_id"],)
+        ).fetchone()
+
+        # Check if already applied
+        existing = db.execute(
+            "SELECT * FROM applications WHERE student_id = ? AND drive_id = ?",
+            (student["id"], drive_id)
+        ).fetchone()
+
+        if existing:
+            return "You have already applied for this drive."
+
+        db.execute(
+            "INSERT INTO applications (student_id, drive_id, status) VALUES (?, ?, ?)",
+            (student["id"], drive_id, "Applied")
+        )
+
+        db.commit()
+
+        return "Application submitted successfully!"
+    
+    @app.route("/student/applications")
+    @login_required(role="student")
+    def student_applications():
+        db = get_db()
+
+        student = db.execute(
+            "SELECT * FROM students WHERE user_id = ?",
+            (session["user_id"],)
+        ).fetchone()
+
+        applications = db.execute(
+            """
+            SELECT applications.*, placement_drives.job_title,
+                companies.company_name
+            FROM applications
+            JOIN placement_drives
+                ON applications.drive_id = placement_drives.id
+            JOIN companies
+                ON placement_drives.company_id = companies.id
+            WHERE applications.student_id = ?
+            """,
+            (student["id"],)
+        ).fetchall()
+
+        return render_template("student/applications.html", applications=applications)
+
     return app
 
 
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

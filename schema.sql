@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS placement_drives (
     job_description TEXT,
     eligibility TEXT,
     package TEXT,
+    min_cgpa REAL,
+    max_applicants INTEGER,
     location TEXT,
     application_deadline DATETIME,
     status TEXT DEFAULT 'Pending',

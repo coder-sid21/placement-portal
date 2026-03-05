@@ -1,0 +1,14 @@
+<h2>My Applications</h2>
+
+{% for app in applications %}
+<p>
+    <b>{{ app["company_name"] }}</b> - {{ app["job_title"] }}
+    <br>
+    Status: {{ app["status"] }}
+</p>
+
+<hr>
+
+{% else %}
+<p>You have not applied to any drives yet.</p>
+{% endfor %}

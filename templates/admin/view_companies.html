@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pending Companies</title>
+</head>
+<body>
+    <h2>Pending Company Approvals</h2>
+
+    {% for company in companies %}
+        <p>
+            {{ company["company_name"] }} -
+            <a href="/admin/approve-company/{{ company['id'] }}">Approve</a>
+        </p>
+    {% else %}
+        <p>No pending companies.</p>
+    {% endfor %}
+</body>
+</html>

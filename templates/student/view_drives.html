@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 class="mb-4">Available Placement Drives</h3>
+
+{% for drive in drives %}
+
+<div class="card shadow-sm mb-3">
+
+<div class="card-body">
+
+<h5>{{ drive["company_name"] }} — {{ drive["job_title"] }}</h5>
+
+<p>
+Package: {{ drive["package"] }} <br>
+Location: {{ drive["location"] }}
+</p>
+
+<a class="btn btn-primary btn-sm"
+href="/student/apply/{{ drive['id'] }}">
+Apply
+</a>
+
+</div>
+
+</div>
+
+{% else %}
+
+<p>No drives available</p>
+
+{% endfor %}
+
+{% endblock %}
