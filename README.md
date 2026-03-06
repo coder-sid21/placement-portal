@@ -51,37 +51,40 @@ This project simulates a real-world **college placement portal** where companies
 ---
 
 ## Project Structure
-placement_portal
+
+```text
+placement_portal/
 │
 ├── app.py
 ├── schema.sql
+├── README.md
+│
 ├── instance/
-│ └── database.db
+│   └── database.db
 │
 ├── templates/
-│ ├── base.html
-│ │
-│ ├── auth/
-│ │ ├── login.html
-│ │ ├── register_student.html
-│ │ └── register_company.html
-│ │
-│ ├── admin/
-│ │ ├── dashboard.html
-│ │ ├── view_companies.html
-│ │ └── view_drives.html
-│ │
-│ ├── student/
-│ │ ├── dashboard.html
-│ │ ├── drives.html
-│ │ ├── applications.html
-│ │ └── profile.html
-│ │
-│ └── company/
-│ ├── dashboard.html
-│ └── create_drive.html
-│
-└── README.md
+│   │
+│   ├── base.html
+│   │
+│   ├── auth/
+│   │   ├── login.html
+│   │   ├── register_student.html
+│   │   └── register_company.html
+│   │
+│   ├── admin/
+│   │   ├── dashboard.html
+│   │   ├── view_companies.html
+│   │   └── view_drives.html
+│   │
+│   ├── student/
+│   │   ├── dashboard.html
+│   │   ├── drives.html
+│   │   ├── applications.html
+│   │   └── profile.html
+│   │
+│   └── company/
+│       ├── dashboard.html
+│       └── create_drive.html
 
 ---
 
