@@ -1,18 +1,40 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Pending Companies</title>
-</head>
-<body>
-    <h2>Pending Company Approvals</h2>
+{% extends "base.html" %}
 
-    {% for company in companies %}
-        <p>
-            {{ company["company_name"] }} -
-            <a href="/admin/approve-company/{{ company['id'] }}">Approve</a>
-        </p>
-    {% else %}
-        <p>No pending companies.</p>
-    {% endfor %}
-</body>
-</html>
+{% block content %}
+
+<a href="/admin-dashboard" class="btn btn-secondary mb-3">
+Back to Dashboard
+</a>
+
+<h2 class="mb-4">Pending Company Approvals</h2>
+
+{% for company in companies %}
+
+<div class="card shadow-sm mb-3">
+
+<div class="card-body">
+
+<h5>{{ company["company_name"] }}</h5>
+
+<p class="text-muted">
+Website: {{ company["website"] }}
+</p>
+
+<a class="btn btn-success btn-sm"
+href="/admin/approve-company/{{ company['id'] }}">
+Approve
+</a>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info">
+No companies waiting for approval
+</div>
+
+{% endfor %}
+
+{% endblock %}

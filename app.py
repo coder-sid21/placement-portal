@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
@@ -24,17 +24,22 @@ def create_app():
     # Login Required Decorator
     # ---------------------------
     def login_required(role=None):
+
         def decorator(f):
+
             @wraps(f)
             def wrapper(*args, **kwargs):
+
                 if "user_id" not in session:
                     return redirect("/login")
 
                 if role and session.get("role") != role:
-                    return "Unauthorized", 403
+                    return render_template("errors/403.html")
 
                 return f(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
     # ---------------------------
@@ -42,7 +47,7 @@ def create_app():
     # ---------------------------
     @app.route("/")
     def home():
-        return "Placement Portal Running 🚀"
+        return render_template("home.html")
 
     # ---------------------------
     # Create Admin (run once)
@@ -67,41 +72,48 @@ def create_app():
     # ---------------------------
     @app.route("/login", methods=["GET", "POST"])
     def login():
+
         if request.method == "POST":
+
             email = request.form["email"]
             password = request.form["password"]
 
             db = get_db()
+
             user = db.execute(
-                "SELECT * FROM users WHERE email = ?",
+                "SELECT * FROM users WHERE email=?",
                 (email,)
             ).fetchone()
 
             if user and check_password_hash(user["password_hash"], password):
 
-                # If company, check approval BEFORE login
-                if user["role"] == "company":
+                session["user_id"] = user["id"]
+                session["role"] = user["role"]
+
+                if user["role"] == "admin":
+                    return redirect("/admin-dashboard")
+
+                elif user["role"] == "company":
+
                     company = db.execute(
-                        "SELECT * FROM companies WHERE user_id = ?",
+                        "SELECT * FROM companies WHERE user_id=?",
                         (user["id"],)
                     ).fetchone()
 
                     if company["approval_status"] != "Approved":
-                        return "Company not approved yet"
 
-                # Store session
-                session["user_id"] = user["id"]
-                session["role"] = user["role"]
+                        flash("Your company account is not approved by admin yet.", "warning")
 
-                # Redirect by role
-                if user["role"] == "admin":
-                    return redirect("/admin-dashboard")
-                elif user["role"] == "company":
+                        return redirect("/login")
+
                     return redirect("/company-dashboard")
                 else:
                     return redirect("/student-dashboard")
 
-            return "Invalid credentials"
+            else:
+                flash("Invalid email or password", "danger")
+                
+                
 
         return render_template("auth/login.html")
 
@@ -111,7 +123,10 @@ def create_app():
     @app.route("/logout")
     def logout():
         session.clear()
-        return redirect("/login")
+        return redirect("/")
+    
+
+
 
     # ---------------------------
     # Student Registration
@@ -152,32 +167,43 @@ def create_app():
     # ---------------------------
     @app.route("/register-company", methods=["GET", "POST"])
     def register_company():
+
         if request.method == "POST":
+
             email = request.form["email"]
             password = request.form["password"]
             company_name = request.form["company_name"]
             website = request.form["website"]
 
             db = get_db()
+
             hashed_password = generate_password_hash(password)
 
             try:
+
                 cursor = db.execute(
                     "INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)",
                     (email, hashed_password, "company")
                 )
+
                 user_id = cursor.lastrowid
 
                 db.execute(
-                    "INSERT INTO companies (user_id, company_name, website, approval_status) VALUES (?, ?, ?, ?)",
+                    """INSERT INTO companies
+                    (user_id, company_name, website, approval_status)
+                    VALUES (?, ?, ?, ?)""",
                     (user_id, company_name, website, "Pending")
                 )
 
                 db.commit()
-                return "Company registered. Wait for admin approval."
+
+                flash("Company registered successfully. Wait for admin approval.", "success")
+
+                return redirect("/login")
 
             except:
-                return "Email already exists"
+
+                flash("Email already exists", "danger")
 
         return render_template("auth/register_company.html")
 
@@ -216,12 +242,29 @@ def create_app():
     @app.route("/company-dashboard")
     @login_required(role="company")
     def company_dashboard():
-        return "Company Dashboard"
+
+        db = get_db()
+
+        company = db.execute(
+            "SELECT * FROM companies WHERE user_id=?",
+            (session["user_id"],)
+        ).fetchone()
+
+        drives = db.execute(
+            "SELECT * FROM placement_drives WHERE company_id=?",
+            (company["id"],)
+        ).fetchall()
+
+        return render_template(
+            "company/dashboard.html",
+            company=company,
+            drives=drives
+        )
 
     @app.route("/student-dashboard")
     @login_required(role="student")
     def student_dashboard():
-        return "Student Dashboard"
+        return render_template("student/dashboard.html")
 
     # ---------------------------
     # Admin View Companies
@@ -278,8 +321,7 @@ def create_app():
             )
 
             db.commit()
-            return "Drive created successfully. Waiting for admin approval."
-
+            return redirect("/company-dashboard")
         return render_template("company/create_drive.html")
     # ---------------------------
     # Admin View Drives
@@ -350,7 +392,7 @@ def create_app():
         ).fetchone()
 
         if existing:
-            return "You have already applied for this drive."
+            return render_template("student/already_applied.html")
 
         db.execute(
             "INSERT INTO applications (student_id, drive_id, status) VALUES (?, ?, ?)",
@@ -359,7 +401,7 @@ def create_app():
 
         db.commit()
 
-        return "Application submitted successfully!"
+        return render_template("student/apply_success.html")
     
     @app.route("/student/applications")
     @login_required(role="student")
@@ -386,10 +428,49 @@ def create_app():
         ).fetchall()
 
         return render_template("student/applications.html", applications=applications)
+    @app.route("/student/profile", methods=["GET", "POST"])
+    @login_required(role="student")
+    def student_profile():
 
+        db = get_db()
+
+        student = db.execute(
+            "SELECT * FROM students WHERE user_id=?",
+            (session["user_id"],)
+        ).fetchone()
+
+        if request.method == "POST":
+
+            cgpa = request.form["cgpa"]
+
+            db.execute(
+                "UPDATE students SET cgpa=? WHERE id=?",
+                (cgpa, student["id"])
+            )
+
+            db.commit()
+
+            return redirect("/student/profile")
+
+        return render_template("student/profile.html", student=student)
+    
+    @app.route("/reset-admin-password")
+    def reset_admin_password():
+
+        db = get_db()
+
+        new_password = generate_password_hash("admin123")
+
+        db.execute(
+            "UPDATE users SET password_hash=? WHERE email=?",
+            (new_password, "admin@portal.com")
+        )
+
+        db.commit()
+
+        return "Admin password reset to admin123"
     return app
-
-
+    
 app = create_app()
 
 if __name__ == "__main__":

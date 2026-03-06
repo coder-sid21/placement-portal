@@ -4,7 +4,7 @@
 
 <h2 class="mb-4">Admin Dashboard</h2>
 
-<div class="row">
+<div class="row g-4">
 
 <div class="col-md-3">
 <div class="card text-center shadow">
@@ -20,6 +20,7 @@
 <div class="card-body">
 <h5>Companies</h5>
 <h3>{{ companies }}</h3>
+<a href="/admin/companies" class="btn btn-sm btn-dark mt-2">Manage</a>
 </div>
 </div>
 </div>
@@ -29,6 +30,7 @@
 <div class="card-body">
 <h5>Drives</h5>
 <h3>{{ drives }}</h3>
+<a href="/admin/drives" class="btn btn-sm btn-dark mt-2">Review</a>
 </div>
 </div>
 </div>
@@ -41,6 +43,26 @@
 </div>
 </div>
 </div>
+
+</div>
+
+<hr class="my-5">
+
+<h4>Quick Actions</h4>
+
+<div class="mt-3">
+
+<a href="/admin/companies" class="btn btn-primary me-2">
+Approve Companies
+</a>
+
+<a href="/admin/drives" class="btn btn-success me-2">
+Approve Placement Drives
+</a>
+
+<a href="/" class="btn btn-secondary">
+Go to Home
+</a>
 
 </div>
 

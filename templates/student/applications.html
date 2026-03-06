@@ -1,14 +1,94 @@
-<h2>My Applications</h2>
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">My Applications</h2>
+
+<a href="/student-dashboard" class="btn btn-secondary mb-3">
+Back to Dashboard
+</a>
+
+{% if applications %}
+
+<div class="table-responsive">
+
+<table class="table table-striped shadow-sm">
+
+<thead class="table-dark">
+
+<tr>
+<th>Company</th>
+<th>Job Title</th>
+<th>Status</th>
+<th>Applied On</th>
+</tr>
+
+</thead>
+
+<tbody>
 
 {% for app in applications %}
-<p>
-    <b>{{ app["company_name"] }}</b> - {{ app["job_title"] }}
-    <br>
-    Status: {{ app["status"] }}
-</p>
 
-<hr>
+<tr>
+
+<td>{{ app["company_name"] }}</td>
+
+<td>{{ app["job_title"] }}</td>
+
+<td>
+
+{% if app["status"] == "Applied" %}
+
+<span class="badge bg-primary">
+{{ app["status"] }}
+</span>
+
+{% elif app["status"] == "Rejected" %}
+
+<span class="badge bg-danger">
+{{ app["status"] }}
+</span>
+
+{% elif app["status"] == "Shortlisted" %}
+
+<span class="badge bg-success">
+{{ app["status"] }}
+</span>
 
 {% else %}
-<p>You have not applied to any drives yet.</p>
+
+<span class="badge bg-secondary">
+{{ app["status"] }}
+</span>
+
+{% endif %}
+
+</td>
+
+<td>{{ app["applied_at"] }}</td>
+
+</tr>
+
 {% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info">
+
+You have not applied to any placement drives yet.
+
+</div>
+
+<a href="/student/drives" class="btn btn-primary">
+Browse Placement Drives
+</a>
+
+{% endif %}
+
+{% endblock %}

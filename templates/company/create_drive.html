@@ -1,31 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Placement Drive</title>
-</head>
-<body>
-    <h2>Create Placement Drive</h2>
+{% extends "base.html" %}
 
-    <form method="POST">
-        <label>Job Title:</label><br>
-        <input type="text" name="job_title" required><br><br>
+{% block content %}
 
-        <label>Job Description:</label><br>
-        <textarea name="job_description" required></textarea><br><br>
+<h2 class="mb-4">Create Placement Drive</h2>
 
-        <label>Eligibility:</label><br>
-        <input type="text" name="eligibility"><br><br>
+<div class="card shadow-sm">
 
-        <label>Package:</label><br>
-        <input type="text" name="package"><br><br>
+<div class="card-body">
 
-        <label>Location:</label><br>
-        <input type="text" name="location"><br><br>
+<form method="POST">
 
-        <label>Application Deadline:</label><br>
-        <input type="date" name="deadline" required><br><br>
+<div class="mb-3">
+<label class="form-label">Job Title</label>
+<input type="text" class="form-control" name="job_title" required>
+</div>
 
-        <button type="submit">Create Drive</button>
-    </form>
-</body>
-</html>
+<div class="mb-3">
+<label class="form-label">Job Description</label>
+<textarea class="form-control" name="job_description" rows="3"></textarea>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Eligibility</label>
+<input type="text" class="form-control" name="eligibility">
+</div>
+
+<div class="row">
+
+<div class="col-md-6">
+<div class="mb-3">
+<label class="form-label">Package</label>
+<input type="text" class="form-control" name="package" placeholder="Eg: 12 LPA">
+</div>
+</div>
+
+<div class="col-md-6">
+<div class="mb-3">
+<label class="form-label">Location</label>
+<input type="text" class="form-control" name="location">
+</div>
+</div>
+
+</div>
+
+<div class="mb-3">
+<label class="form-label">Application Deadline</label>
+<input type="date" class="form-control" name="deadline">
+</div>
+
+<button class="btn btn-primary">
+
+Create Drive
+
+</button>
+
+<a href="/company-dashboard" class="btn btn-secondary ms-2">
+
+Back
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

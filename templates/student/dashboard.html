@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Student Dashboard</h2>
+
+<div class="row">
+
+<div class="col-md-4">
+<div class="card shadow">
+<div class="card-body text-center">
+<h5>View Drives</h5>
+<a class="btn btn-primary" href="/student/drives">Open</a>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card shadow">
+<div class="card-body text-center">
+<h5>My Applications</h5>
+<a class="btn btn-primary" href="/student/applications">Open</a>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card shadow">
+<div class="card-body text-center">
+<h5>Profile</h5>
+<a class="btn btn-primary" href="/student/profile">Open</a>
+</div>
+</div>
+</div>
+
+</div>
+
+{% endblock %}

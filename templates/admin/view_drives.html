@@ -2,19 +2,30 @@
 
 {% block content %}
 
-<h3 class="mb-4">Pending Placement Drives</h3>
+<a href="/admin-dashboard" class="btn btn-secondary mb-3">
+Back to Dashboard
+</a>
+
+<h2 class="mb-4">Pending Placement Drives</h2>
 
 {% for drive in drives %}
 
-<div class="card mb-3 shadow-sm">
+<div class="card shadow-sm mb-3">
 
 <div class="card-body">
 
-<h5>{{ drive["company_name"] }} — {{ drive["job_title"] }}</h5>
+<h5>
+{{ drive["company_name"] }} — {{ drive["job_title"] }}
+</h5>
+
+<p class="text-muted">
+Location: {{ drive["location"] }} <br>
+Package: {{ drive["package"] }}
+</p>
 
 <a class="btn btn-success btn-sm"
 href="/admin/approve-drive/{{ drive['id'] }}">
-Approve
+Approve Drive
 </a>
 
 </div>
@@ -23,7 +34,9 @@ Approve
 
 {% else %}
 
-<p>No pending drives</p>
+<div class="alert alert-info">
+No pending placement drives
+</div>
 
 {% endfor %}
 

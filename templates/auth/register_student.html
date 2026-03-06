@@ -1,25 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Student Registration</title>
-</head>
-<body>
-    <h2>Register as Student</h2>
+{% extends "base.html" %}
 
-    <form method="POST">
-        <label>Full Name:</label><br>
-        <input type="text" name="full_name" required><br><br>
+{% block content %}
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+<div class="row justify-content-center">
 
-        <label>Branch:</label><br>
-        <input type="text" name="branch" required><br><br>
+<div class="col-md-6">
 
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+<div class="card shadow-lg">
 
-        <button type="submit">Register</button>
-    </form>
-</body>
-</html>
+<div class="card-body p-4">
+
+<h3 class="text-center mb-4">Student Registration</h3>
+
+<form method="POST">
+
+<div class="mb-3">
+<label class="form-label">Full Name</label>
+<input class="form-control" name="full_name" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Email</label>
+<input type="email" class="form-control" name="email" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Phone</label>
+<input class="form-control" name="phone">
+</div>
+
+<div class="mb-3">
+<label class="form-label">Branch</label>
+<input class="form-control" name="branch">
+</div>
+
+<div class="mb-3">
+<label class="form-label">Password</label>
+<input type="password" class="form-control" name="password" required>
+</div>
+
+<div class="d-grid">
+<button class="btn btn-primary">Register</button>
+</div>
+
+</form>
+
+<hr>
+
+<p class="text-center">
+Already have an account?
+<a href="/login">Login</a>
+</p>
+
+</div>
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

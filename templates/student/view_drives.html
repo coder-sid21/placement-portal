@@ -2,25 +2,39 @@
 
 {% block content %}
 
-<h3 class="mb-4">Available Placement Drives</h3>
+<h2 class="mb-4">Available Placement Drives</h2>
+
+<div class="row">
 
 {% for drive in drives %}
 
-<div class="card shadow-sm mb-3">
+<div class="col-md-6 mb-4">
+
+<div class="card shadow-sm h-100">
 
 <div class="card-body">
 
-<h5>{{ drive["company_name"] }} — {{ drive["job_title"] }}</h5>
+<h5 class="card-title">
+{{ drive["company_name"] }}
+</h5>
 
-<p>
-Package: {{ drive["package"] }} <br>
-Location: {{ drive["location"] }}
+<h6 class="text-muted mb-3">
+{{ drive["job_title"] }}
+</h6>
+
+<p class="mb-2">
+<strong>Package:</strong> {{ drive["package"] }}
 </p>
 
-<a class="btn btn-primary btn-sm"
-href="/student/apply/{{ drive['id'] }}">
-Apply
+<p class="mb-3">
+<strong>Location:</strong> {{ drive["location"] }}
+</p>
+
+<a href="/student/apply/{{ drive['id'] }}" class="btn btn-primary btn-sm">
+Apply Now
 </a>
+
+</div>
 
 </div>
 
@@ -28,8 +42,12 @@ Apply
 
 {% else %}
 
-<p>No drives available</p>
+<div class="alert alert-info">
+No placement drives available right now
+</div>
 
 {% endfor %}
+
+</div>
 
 {% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="text-center mb-5">
+
+<h1 class="display-5">Placement Portal</h1>
+
+<p class="text-muted">
+A platform connecting students with companies for campus placements
+</p>
+
+</div>
+
+<div class="row text-center g-4">
+
+<!-- Student Card -->
+<div class="col-md-4">
+
+<div class="card shadow h-100">
+
+<div class="card-body">
+
+<h4>Student</h4>
+
+<p class="text-muted">
+Register and apply to placement drives
+</p>
+
+{% if session.get("user_id") %}
+
+<a href="/student-dashboard" class="btn btn-primary">
+Go to Dashboard
+</a>
+
+{% else %}
+
+<a href="/register-student" class="btn btn-primary mb-2">
+Register
+</a>
+
+<br>
+
+<a href="/login" class="btn btn-outline-dark">
+Login
+</a>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Company Card -->
+<div class="col-md-4">
+
+<div class="card shadow h-100">
+
+<div class="card-body">
+
+<h4>Company</h4>
+
+<p class="text-muted">
+Create placement drives and hire students
+</p>
+
+{% if session.get("user_id") %}
+
+<a href="/company-dashboard" class="btn btn-success">
+Go to Dashboard
+</a>
+
+{% else %}
+
+<a href="/register-company" class="btn btn-success mb-2">
+Register
+</a>
+
+<br>
+
+<a href="/login" class="btn btn-outline-dark">
+Login
+</a>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Admin Card -->
+<div class="col-md-4">
+
+<div class="card shadow h-100">
+
+<div class="card-body">
+
+<h4>Admin</h4>
+
+<p class="text-muted">
+Manage companies and placement drives
+</p>
+
+{% if session.get("role") == "admin" %}
+
+<a href="/admin-dashboard" class="btn btn-dark">
+Go to Dashboard
+</a>
+
+{% else %}
+
+<a href="/login" class="btn btn-dark">
+Admin Login
+</a>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">Company Dashboard</h2>
+
+<div class="card shadow-sm mb-4">
+<div class="card-body">
+
+<h5>{{ company["company_name"] }}</h5>
+<p class="text-muted">{{ company["website"] }}</p>
+
+</div>
+</div>
+
+
+<div class="d-flex justify-content-between mb-3">
+
+<h4>Your Placement Drives</h4>
+
+<a class="btn btn-primary"
+href="/company/create-drive">
+
+Create New Drive
+
+</a>
+
+</div>
+
+
+{% if drives %}
+
+<table class="table table-striped shadow-sm">
+
+<thead class="table-dark">
+
+<tr>
+<th>Job Title</th>
+<th>Location</th>
+<th>Package</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for drive in drives %}
+
+<tr>
+
+<td>{{ drive["job_title"] }}</td>
+
+<td>{{ drive["location"] }}</td>
+
+<td>{{ drive["package"] }}</td>
+
+<td>
+
+{% if drive["status"] == "Approved" %}
+<span class="badge bg-success">Approved</span>
+{% else %}
+<span class="badge bg-warning text-dark">Pending</span>
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% else %}
+
+<div class="alert alert-info">
+
+No drives created yet.
+
+</div>
+
+{% endif %}
+
+{% endblock %}
