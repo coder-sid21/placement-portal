@@ -1,56 +1,64 @@
 # Placement Portal
 
-A web-based **Placement Management System** built using **Flask, SQLite, and Bootstrap**.  
-The portal allows **students, companies, and administrators** to interact in a centralized system for managing placement drives and job applications.
+A web-based **Placement Management System** built using **Flask, SQLite, and Bootstrap**.
 
-This project simulates a real-world **college placement portal** where companies post opportunities, students apply, and the admin manages approvals.
+This portal simulates a **college placement system** where:
+
+- Students can view and apply to placement drives
+- Companies can register and create placement drives
+- Admin manages approvals and monitors the system
+
+The goal of the project is to provide a **centralized platform for managing campus placements efficiently**.
 
 ---
 
-## Features
+# Features
 
-### Student
+## Student
+
 - Register and login
 - View approved placement drives
-- Apply to drives
+- Apply to placement drives
 - Track application status
-- Manage profile information
+- Manage personal profile
 
-### Company
+## Company
+
 - Register company account
 - Wait for admin approval
 - Create placement drives
-- View drives created and their approval status
+- View created drives and their status
 
-### Admin
-- Dashboard with system statistics
+## Admin
+
+- Dashboard with platform statistics
 - Approve company registrations
 - Approve placement drives
-- Monitor the platform activity
+- Monitor system activities
 
 ---
 
-## Tech Stack
+# Tech Stack
 
-**Backend**
+## Backend
 - Python
 - Flask
 
-**Frontend**
+## Frontend
 - HTML
 - Bootstrap 5
 - Jinja Templates
 
-**Database**
+## Database
 - SQLite
 
-**Version Control**
+## Version Control
 - Git
 - GitHub
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 placement_portal/
@@ -63,118 +71,151 @@ placement_portal/
 │   └── database.db
 │
 ├── templates/
-│   │
+│
 │   ├── base.html
-│   │
+│
 │   ├── auth/
 │   │   ├── login.html
 │   │   ├── register_student.html
 │   │   └── register_company.html
-│   │
+│
 │   ├── admin/
 │   │   ├── dashboard.html
 │   │   ├── view_companies.html
 │   │   └── view_drives.html
-│   │
+│
 │   ├── student/
 │   │   ├── dashboard.html
 │   │   ├── drives.html
 │   │   ├── applications.html
 │   │   └── profile.html
-│   │
+│
 │   └── company/
 │       ├── dashboard.html
 │       └── create_drive.html
+```
 
 ---
 
-## Installation
+# Installation
 
-### 1 Clone the repository
+## 1 Clone the repository
+
+```
 git clone https://github.com/your-username/placement-portal.git
-
 cd placement-portal
+```
 
+## 2 Create a virtual environment
 
-### 2 Create virtual environment
-
-
+```
 python -m venv venv
+```
 
+## 3 Activate the environment
 
-### 3 Activate environment
+### Mac / Linux
 
-Mac / Linux
-
-
+```
 source venv/bin/activate
+```
 
+### Windows
 
-Windows
-
-
+```
 venv\Scripts\activate
+```
 
+## 4 Install dependencies
 
-### 4 Install dependencies
-
-
+```
 pip install flask
+```
 
+## 5 Initialize the database
 
-### 5 Initialize the database
+Open this once in your browser:
 
-Run this once in your browser:
-
-
+```
 http://127.0.0.1:5000/init-db
+```
 
+## 6 Run the application
 
-### 6 Run the application
-
-
+```
 python app.py
+```
 
+Open the project:
 
-Then open:
-
-
+```
 http://127.0.0.1:5000
-
+```
 
 ---
 
-## Default Admin Credentials
+# Default Admin Credentials
 
-
+```
 Email: admin@portal.com
-
 Password: admin123
-
+```
 
 Admin can approve companies and placement drives from the admin dashboard.
 
 ---
 
-## Application Workflow
+# Application Workflow
 
+The portal follows a structured workflow involving **Admin, Company, and Student**.
 
-Company registers
-↓
-Admin approves company
-↓
-Company creates placement drive
-↓
-Admin approves drive
-↓
-Students view drives
-↓
-Students apply
+```text
+1. Company Registration
+   Company registers on the portal.
 
+2. Admin Approval
+   Admin reviews and approves the company.
+
+3. Company Login
+   Once approved, the company can log in.
+
+4. Create Placement Drive
+   Company creates a job drive.
+
+5. Drive Approval
+   Admin reviews and approves the drive.
+
+6. Student Access
+   Approved drives become visible to students.
+
+7. Student Application
+   Students apply to drives.
+
+8. Application Tracking
+   Students track applications and companies review applicants.
+```
+
+## Workflow Diagram
+
+```text
+Company Register
+        ↓
+Admin Approves Company
+        ↓
+Company Creates Drive
+        ↓
+Admin Approves Drive
+        ↓
+Students View Drives
+        ↓
+Students Apply
+        ↓
+Applications Stored in System
+```
 
 ---
 
-## Screens Included
+# Screens Included
 
 - Login Page
 - Student Dashboard
@@ -185,26 +226,26 @@ Students apply
 
 ---
 
-## Future Improvements
+# Future Improvements
 
-Possible improvements that can be added:
+Possible improvements for the system:
 
 - Resume upload and download
 - Email notifications
 - Interview scheduling
-- Advanced admin analytics dashboard
+- Advanced admin analytics
 - Application status updates
 - Role-based permission system
 - Password reset through email verification
 
 ---
 
-## Author
+# Author
 
 Siddhartha Singh
 
 ---
 
-## License
+# License
 
-This project is created for **educational purposes** and can be freely modified or extended.
+This project is developed for **educational purposes** and can be freely modified or extended.
