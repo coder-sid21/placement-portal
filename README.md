@@ -198,7 +198,7 @@ Possible improvements that can be added:
 
 ## Author
 
-Aparna Singh
+Siddhartha Singh
 
 ---
 
